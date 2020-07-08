@@ -20,5 +20,5 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       with:
-          args: deploy --dir=Course_Display\bin\Release\netcoreapp3.1\publish\dist --prod
+          args: deploy --dir=Course_Display/bin/Release/netcoreapp3.1/publish/dist --prod
           secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
