@@ -16,7 +16,8 @@ jobs:
       run: dotnet publish -c Release --no-build -o ./../CourseDisplay/
     - name: Publish generated Blazor webassembly to Netlify
       uses: netlify/actions/cli@master
-      with:
-          args: deploy --dir=Course_Display/ --prod
+      env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      with:
+          args: deploy --dir=Course_Display/ --prod
