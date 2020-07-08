@@ -5,13 +5,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.100
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: npm install
+    - name: Build site
+      run: npm run build
     - name: Publish Blazor webassembly using dotnet
       run: dotnet publish -c Release --no-build -o ./../CourseDisplay/
     - name: Publish generated Blazor webassembly to Netlify
