@@ -1,0 +1,51 @@
+﻿{
+   "ContextClassName": "CoursedbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "DoNotCombineNamespace": false,
+   "IdReplace": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Data",
+   "OutputPath": "Data",
+   "ProjectRootNamespace": "Course_Display",
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[CISTList]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[CoreCourses]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[CoreExtension]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[CSCIList]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[CYBRList]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[MATHList]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[UpperDivision]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseSpatial": false
+}

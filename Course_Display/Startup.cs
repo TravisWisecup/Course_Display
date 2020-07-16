@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Course_Display.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Course_Display
 {
@@ -28,7 +29,8 @@ namespace Course_Display
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddDbContext<CoursedbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<DBService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
