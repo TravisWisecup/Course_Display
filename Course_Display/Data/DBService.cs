@@ -87,6 +87,8 @@ namespace Course_Display.Data
                 course.CourseName = dr[0].ToString();
 
                 course.CreditHours = Int32.Parse(dr[1].ToString());
+
+                course.Prereqs = dr[2].ToString();
             }
 
             conn.Close();
@@ -97,6 +99,43 @@ namespace Course_Display.Data
 
             return task;
 
+        }
+
+        public void Testing(string CourseName)
+        {
+            Course course = new Course();
+
+            string strConn = "Data Source = database-1.cinez0pdciee.us-east-2.rds.amazonaws.com,1433; Initial Catalog = CourseDB; User ID = admin; Password = **OrigamiTigerKing**";
+
+            SqlConnection conn = new SqlConnection(strConn);
+
+            string DBToCheck = "";
+
+            if (CourseName.StartsWith("CSCI"))
+            {
+                DBToCheck = "CSCIList";
+            }
+            else if (CourseName.StartsWith("CYBR"))
+            {
+                DBToCheck = "CYBRList";
+            }
+            else if (CourseName.StartsWith("CIST"))
+            {
+                DBToCheck = "CISTList";
+            }
+            else if (CourseName.StartsWith("MATH"))
+            {
+                DBToCheck = "MATHList";
+            }
+
+            string sql = "SELECT * FROM " + DBToCheck + " WHERE CourseName='" + CourseName + "';";
+
+            SqlCommand command = new SqlCommand(sql, conn);
+
+            //opening connection and executing the query
+
+            conn.Open();
+            conn.Close();
         }
     }
 }
