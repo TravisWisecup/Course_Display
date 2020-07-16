@@ -3,7 +3,7 @@
 @using Course_Display.Data
 @inject DBService dbService
 
-<h1>Weather forecast</h1>
+<h1>Fetch Data</h1>
 
 
 @if (currentCourse == null)
@@ -21,19 +21,28 @@ else
             </tr>
         </thead>
         <tbody>
-                <tr>
-                    <td>@currentCourse.CourseName</td>
-                    <td>@currentCourse.CreditHours</td>
-                    <td>@currentCourse.Prereqs</td>
-                </tr>
+            <tr>
+                <td>@currentCourse.CourseName</td>
+                <td>@currentCourse.CreditHours</td>
+                <td>@currentCourse.Prereqs</td>
+            </tr>
         </tbody>
     </table>
 }
 
-<button @onclick="() => getThing()">Populate list</button>
+<br />
+<br />
+
+<input type="text" @bind-value="courseName" />
+
+<br />
+<br />
+
+<button @onclick="() => getThing()">Grab Course Data</button>
 
 @code {
     public Course currentCourse;
+    public string courseName = "CSCI300";
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,7 +50,7 @@ else
 
     public async void getThing()
     {
-        currentCourse = await dbService.GetCourseAsync("CSCI 1200");
+        currentCourse = await dbService.GetCourseAsync(courseName);
         //dbService.Testing("CSCI300");
     }
 }
