@@ -1,0 +1,187 @@
+﻿@inject DBService dbService
+
+
+@if (course == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div><h3>@course.CourseName</h3></div>
+    foreach (KeyValuePair<string, bool> kvp in AndDict)
+    {
+        Course tempCourse = new Course();
+        tempCourse = getCourse(kvp.Key).Result;
+        <div>AND <ClassComponent course="tempCourse" classList="classList"></ClassComponent> </div>
+    }
+    foreach (Dictionary<string, bool> dict in orDict)
+    {
+        Course tempCourse = new Course();
+        foreach (KeyValuePair<string, bool> kvp in dict)
+        {
+            tempCourse = getCourse(kvp.Key).Result;
+            <div>OR <ClassComponent course="tempCourse" classList="classList"></ClassComponent> </div>
+        }
+    }
+}|
+
+
+<br />
+<br />
+
+
+
+@code {
+    [Parameter]
+    public Course course { get; set; }
+
+    [Parameter]
+    public List<string> classList { get; set; }
+
+    List<Dictionary<string, bool>> orDict = new List<Dictionary<string, bool>>();
+    HashSet<string> AndComplement = new HashSet<string>();
+    Dictionary<string, bool> AndDict = new Dictionary<string, bool>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        returnPrereqs();
+    }
+
+    // Given a course name as a string
+    // Populates the currentCourse object with the values belonging to that course
+    public async Task<Course> getCourse(string courseName)
+    {
+        Course courseFromDB = new Course();
+        courseFromDB = await dbService.GetCourseAsync(courseName);
+        return courseFromDB;
+        //dbService.Testing("CSCI300");
+    }
+
+    public void returnPrereqs()
+    {
+        // "MATH 2230,*,MATH 2030,CSCI 2030,"
+
+        string[] PrereqArray = { "" };
+
+        if(!(course.Prereqs == null))
+        {
+            PrereqArray = course.Prereqs.Split(",");
+        }
+
+        PrereqCheck(PrereqArray);
+    }
+
+    // Given a string array holding the prerequsities, and using the classList provided by the user
+    // Returns true/false depending on if they can take that class with the classes they've taken so far
+    private bool PrereqCheck(string[] PrereqArray)
+    {
+        // MATH 1120,*,MATH 1130,*,MATH 1220,MATH 100,MATH 500,*,MATH 700,MATH 200,MATH 300,MATH 4000,*,MATH 900,*,MATH 600
+        //        0  1      2    3   4        5       6        7       8        9       10       11   12     13  14   15
+        bool Check = false;
+        try
+        {
+            string value = "*";
+            int[] asteriskArray = PrereqArray.Select((b, i) => b == value ? i : -1).Where(i => i != -1).ToArray();
+
+
+
+            for (int i = 0; i < PrereqArray.Length - 1; i = i)
+            {
+                if (PrereqArray[i + 1] == "*")
+                {
+                    Dictionary<string, bool> tempDict = new Dictionary<string, bool>();
+                    int lastAsterisk = recursiveArrayCheck(PrereqArray, i + 1);
+                    bool oneOr = false;
+                    if (lastAsterisk == i + 1)
+                    {
+                        oneOr = true;
+                    }
+                    for (int x = i; x < lastAsterisk; x = x + 2)
+                    {
+                        if (x + 1 != lastAsterisk || oneOr)
+                        {
+                            AndComplement.Add(PrereqArray[x]);
+                            tempDict.Add(PrereqArray[x], returnTrueIfHasClass(PrereqArray[x]));
+                        }
+                        AndComplement.Add(PrereqArray[x + 2]);
+                        tempDict.Add(PrereqArray[x + 2], returnTrueIfHasClass(PrereqArray[x + 2]));
+                    }
+                    orDict.Add(tempDict);
+                    i = lastAsterisk + 1;
+                }
+                else
+                {
+
+                    i++;
+                }
+            }
+
+            foreach (string s in PrereqArray)
+            {
+                if (!AndComplement.Contains(s) && s != "*" && s != "")
+                {
+                    AndDict.Add(s, returnTrueIfHasClass(s));
+                }
+            }
+
+            foreach (Dictionary<string, bool> d in orDict)
+            {
+                if (!d.ContainsValue(true))
+                {
+                    Check = false;
+                    break;
+                }
+                else
+                {
+                    Check = true;
+                }
+            }
+
+            if (AndDict.ContainsValue(false))
+            {
+                Check = false;
+            }
+        }
+        catch(Exception e)
+        {
+            Check = true;
+        }
+
+
+
+        return Check;
+    }
+
+    // Given a class name as a string
+    // Returns true if classList contains that class
+    // Returns false if classList does not contain the class
+    private bool returnTrueIfHasClass(string className)
+    {
+        return classList.Contains(className);
+    }
+
+    // Given an element location, and the string array of prerequisites from a class
+    // Returns the location of the last asterisk, OR, in a sequence
+    // i.e.: Given 1, returns 3. Given 7 returns 7. Given 12 returns 14.
+    // MATH 1120,*,MATH 1130,*,MATH 1220,MATH 100,MATH 500,*,MATH 700,MATH 200,MATH 300,MATH 4000,*,MATH 900,*,MATH 600
+    //        0  1      2    3   4        5       6        7       8        9       10       11   12     13  14   15
+    private int recursiveArrayCheck(string[] PrereqArray, int location)
+    {
+        if (location + 2 < PrereqArray.Length)
+        {
+            if (PrereqArray[location + 2] == "*")
+            {
+                recursiveArrayCheck(PrereqArray, location + 2);
+                return location + 2;
+            }
+            else
+            {
+                return location;
+            }
+        }
+        else
+        {
+            return location;
+        }
+    }
+}

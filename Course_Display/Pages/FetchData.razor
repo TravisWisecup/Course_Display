@@ -1,6 +1,9 @@
 ﻿@page "/fetchdata"
 
-@using Course_Display.Data
+@using Course_Display.Data;
+@using CsvHelper;
+@using System.IO;
+@using System.Globalization;
 @inject DBService dbService
 
 <h1>Fetch Data</h1>
@@ -12,6 +15,7 @@
 }
 else
 {
+    <ClassComponent course="currentCourse" classList="classList"></ClassComponent>
     <table class="table">
         <thead>
             <tr>
@@ -24,7 +28,7 @@ else
             <tr>
                 <td>@currentCourse.CourseName</td>
                 <td>@currentCourse.CreditHours</td>
-                <td>@returnPrereqs(currentCourse.Prereqs).ToString()</td>
+                <!-- <td>@returnPrereqs(currentCourse.Prereqs).ToString()</td> -->
             </tr>
         </tbody>
     </table>
@@ -33,135 +37,49 @@ else
 <br />
 <br />
 
-<input type="text" @bind-value="courseName" />
-
+<input type="text" @bind="courseName" />
 <br />
 <br />
-
-<button @onclick="() => getCourse()">Grab Course Data</button>
+<button @onclick="(async ()=> await getCourse())">Get Course</button>
 
 @code {
     public Course currentCourse;
-    public string courseName = "CSCI 300";
-    public string[] classList = { "MATH 1120", "MATH 100", /* "MATH 500", */ "MATH 200", "MATH 300", "MATH 4000" };
+    public string courseName = "";
+    public IEnumerable<ReqCourse> ReqCoreList;
+    public List<Course> NoPrereqList = new List<Course>();
+    public List<string> classList = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
+        var Table = "RequiredTest";
+        var _context = new CoursedbContext { CourseList = Table };
+
+        var reader = new StreamReader("J:\\Desktop\\Intro to Software Engineering\\Course_Display\\Course_Display\\" + Table + ".csv");
+        var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        ReqCoreList = csv.GetRecords<ReqCourse>();
+        foreach (ReqCourse req in ReqCoreList)
+        {
+            Course tempCourse = new Course();
+            courseName = req.CourseName;
+            tempCourse = await getCourse();
+            classList.Add(tempCourse.CourseName);
+            if (tempCourse.Prereqs == null || tempCourse.Prereqs == "")
+            {
+                NoPrereqList.Add(tempCourse);
+            }
+        }
+        reader.Close();
+        csv.Dispose();
     }
 
-    public async void getCourse()
+    // Given a course name as a string
+    // Populates the currentCourse object with the values belonging to that course
+    public async Task<Course> getCourse()
     {
         currentCourse = await dbService.GetCourseAsync(courseName);
+        return currentCourse;
         //dbService.Testing("CSCI300");
     }
 
-    public string[] returnPrereqs(string PrereqString)
-    {
-        // "MATH 2230,*,MATH 2030,CSCI 2030,"
 
-        string[] PrereqArray;
-
-        PrereqArray = PrereqString.Split(",");
-
-        PrereqCheck(PrereqArray);
-
-        return PrereqArray;
-    }
-
-    private bool PrereqCheck(string[] PrereqArray)
-    {
-        // MATH 1120,*,MATH 1130,*,MATH 1220,MATH 100,MATH 500,*,MATH 700,MATH 200,MATH 300,MATH 4000,*,MATH 900,*,MATH 600
-        //        0  1      2    3   4        5       6        7       8        9       10       11   12     13  14   15  
-        bool Check = false;
-        string value = "*";
-        int[] asteriskArray = PrereqArray.Select((b, i) => b == value ? i : -1).Where(i => i != -1).ToArray();
-        List<Dictionary<string, bool>> orDict = new List<Dictionary<string, bool>>();
-        HashSet<string> AndComplement = new HashSet<string>();
-        Dictionary<string, bool> AndDict = new Dictionary<string, bool>();
-
-
-        for (int i = 0; i < PrereqArray.Length - 1; i = i)
-        {
-            if (PrereqArray[i + 1] == "*")
-            {
-                Dictionary<string, bool> tempDict = new Dictionary<string, bool>();
-                int lastAsterisk = recursiveArrayCheck(PrereqArray, i+1);
-                bool oneOr = false;
-                if(lastAsterisk == i+1)
-                {
-                    oneOr = true;
-                }
-                for (int x = i; x < lastAsterisk; x = x + 2)
-                {
-                    if(x+1 != lastAsterisk || oneOr)
-                    {
-                        AndComplement.Add(PrereqArray[x]);
-                        tempDict.Add(PrereqArray[x], returnTrueIfHasClass(PrereqArray[x]));
-                    }
-                    AndComplement.Add(PrereqArray[x + 2]);
-                    tempDict.Add(PrereqArray[x + 2], returnTrueIfHasClass(PrereqArray[x + 2]));
-                }
-                orDict.Add(tempDict);
-                i = lastAsterisk + 1;
-            }
-            else
-            {
-
-                i++;
-            }
-        }
-
-        foreach(string s in PrereqArray)
-        {
-            if(!AndComplement.Contains(s) && s != "*" && s != "")
-            {
-                AndDict.Add(s, returnTrueIfHasClass(s));
-            }
-        }
-
-        foreach(Dictionary<string, bool> d in orDict)
-        {
-            if (!d.ContainsValue(true))
-            {
-                Check = false;
-                break;
-            }
-            else
-            {
-                Check = true;
-            }
-        }
-
-        if(AndDict.ContainsValue(false))
-        {
-            Check = false;
-        }
-
-        return Check;
-    }
-
-    private bool returnTrueIfHasClass(string className)
-    {
-        return classList.Contains(className);
-    }
-
-    private int recursiveArrayCheck(string[] PrereqArray, int location)
-    {
-        if(location + 2 < PrereqArray.Length)
-        {
-            if (PrereqArray[location + 2] == "*")
-            {
-                recursiveArrayCheck(PrereqArray, location + 2);
-                return location + 2;
-            }
-            else
-            {
-                return location;
-            }
-        }
-        else
-        {
-            return location;
-        }
-    }
 }

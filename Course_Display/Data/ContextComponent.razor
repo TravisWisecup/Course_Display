@@ -1,0 +1,40 @@
+﻿@using CsvHelper;
+@using System.IO;
+@using System.Globalization;
+
+
+    <button @onclick="(await => upload())">Upload Local @Table CSV to DB</button>
+
+@code {
+    [Parameter]
+    public string Table { get; set; }
+
+    public async void upload()
+    {
+        var _context = new CoursedbContext { CourseList = Table };
+
+        using (var reader = new StreamReader("J:\\Desktop\\Intro to Software Engineering\\Course_Display\\Course_Display\\" + Table + ".csv"))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        {
+            var records = csv.GetRecords<Course>();
+            var tableString = Table;
+            switch (tableString)
+            {
+                case "CISTList":
+                    _context.CISTList.AddRange(records);
+                    break;
+                case "CYBRList":
+                    _context.CYBRList.AddRange(records);
+                    break;
+                case "CSCIList":
+                    _context.CSCIList.AddRange(records);
+                    break;
+                case "MATHList":
+                    _context.MATHList.AddRange(records);
+                    break;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+    }
+}
