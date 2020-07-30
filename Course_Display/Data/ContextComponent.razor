@@ -13,7 +13,7 @@
     {
         var _context = new CoursedbContext { CourseList = Table };
 
-        using (var reader = new StreamReader("J:\\Desktop\\Intro to Software Engineering\\Course_Display\\Course_Display\\" + Table + ".csv"))
+        using (var reader = new StreamReader("" + Table + ".csv"))
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             var records = csv.GetRecords<Course>();

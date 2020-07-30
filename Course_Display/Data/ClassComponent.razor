@@ -7,28 +7,59 @@
 }
 else
 {
-    <div><h3>@course.CourseName</h3></div>
-    foreach (KeyValuePair<string, bool> kvp in AndDict)
+    if (hasTakenClass)
     {
-        Course tempCourse = new Course();
-        tempCourse = getCourse(kvp.Key).Result;
-        <div>AND <ClassComponent course="tempCourse" classList="classList"></ClassComponent> </div>
+        <div @onclick="( ()=> changeDisplay())" style="Background-color:green"><h3>@course.CourseName</h3></div>
     }
-    foreach (Dictionary<string, bool> dict in orDict)
+    else
     {
-        Course tempCourse = new Course();
-        foreach (KeyValuePair<string, bool> kvp in dict)
+        <div @onclick="( ()=> changeDisplay())" style="@(meetsPrereqs == true ? "Background-color:yellow" : "Background-color:red")"><h3>@course.CourseName</h3></div>
+    }
+    <div hidden="@visible">
+
+    </div>
+    <div hidden="@visible">
+        @foreach (KeyValuePair<string, bool> kvp in AndDict)
         {
-            tempCourse = getCourse(kvp.Key).Result;
-            <div>OR <ClassComponent course="tempCourse" classList="classList"></ClassComponent> </div>
+            if (returnTrueIfHasClass(kvp.Key))
+            {
+                <div style="Background-color:green"><h6>@kvp.Key</h6></div>
+            }
+            else
+            {
+                <div style="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "Background-color:yellow" : "Background-color:red")"><h6>@kvp.Key</h6></div>
+            }
+            <div>and</div>
         }
-    }
-}|
-
-
-<br />
-<br />
-
+        @{ var dictCount = 0;
+            var dictionariesCount = 0;}
+        @foreach (Dictionary<string, bool> dict in orDict)
+        {
+            dictionariesCount++;
+            @foreach (KeyValuePair<string, bool> kvp in dict)
+            {
+                dictCount++;
+                if (returnTrueIfHasClass(kvp.Key))
+                {
+                    <div style="Background-color:green"><h6>@kvp.Key</h6></div>
+                }
+                else
+                {
+                    <div style="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "Background-color:yellow" : "Background-color:red")"><h6>@kvp.Key</h6></div>
+                }
+                if(dictCount < dict.Count)
+                {
+                    <div>or</div>
+                }
+            }
+            dictCount = 0;
+            if(dictionariesCount < orDict.Count)
+            {
+                <div>and</div>
+            }
+        }
+    </div>
+}
 
 
 @code {
@@ -38,13 +69,50 @@ else
     [Parameter]
     public List<string> classList { get; set; }
 
+    public bool visible = true;
+    public bool meetsPrereqs = false;
+    public bool hasTakenClass = false;
+    public int count = 0;
+
+    List<Course> orCourses = new List<Course>();
+    List<Course> andCourses = new List<Course>();
+
     List<Dictionary<string, bool>> orDict = new List<Dictionary<string, bool>>();
-    HashSet<string> AndComplement = new HashSet<string>();
     Dictionary<string, bool> AndDict = new Dictionary<string, bool>();
 
     protected override async Task OnInitializedAsync()
     {
-        returnPrereqs();
+        meetsPrereqs = returnPrereqs(course);
+        populateCourses();
+    }
+
+    public async void changeDisplay()
+    {
+        visible = !visible;
+    }
+
+    public async Task<bool> checkIfCanTakePrereq(string prereqName)
+    {
+        Course prereqCourse = await getCourse(prereqName);
+        bool canTake = false;
+
+        canTake = returnPrereqs(prereqCourse);
+        return canTake;
+    }
+
+    public async Task populateCourses()
+    {
+        foreach (KeyValuePair<string, bool> kvp in AndDict)
+        {
+            andCourses.Add(getCourse(kvp.Key).Result);
+        }
+        foreach (Dictionary<string, bool> dict in orDict)
+        {
+            foreach (KeyValuePair<string, bool> kvp in dict)
+            {
+                orCourses.Add(getCourse(kvp.Key).Result);
+            }
+        }
     }
 
     // Given a course name as a string
@@ -57,33 +125,44 @@ else
         //dbService.Testing("CSCI300");
     }
 
-    public void returnPrereqs()
+    public bool returnPrereqs(Course courseToCheck)
     {
         // "MATH 2230,*,MATH 2030,CSCI 2030,"
 
         string[] PrereqArray = { "" };
 
-        if(!(course.Prereqs == null))
+        if (!(courseToCheck.Prereqs == null))
         {
-            PrereqArray = course.Prereqs.Split(",");
+            PrereqArray = courseToCheck.Prereqs.Split(",");
         }
 
-        PrereqCheck(PrereqArray);
+        bool canTake = PrereqCheck(PrereqArray);
+
+        if (classList.Contains(courseToCheck.CourseName))
+        {
+            hasTakenClass = true;
+        }
+
+        return canTake;
     }
 
     // Given a string array holding the prerequsities, and using the classList provided by the user
     // Returns true/false depending on if they can take that class with the classes they've taken so far
     private bool PrereqCheck(string[] PrereqArray)
     {
+        count++;
+
+        bool canTakeClass = false;
+        List<Dictionary<string, bool>> tempOrDict = new List<Dictionary<string, bool>>();
+        HashSet<string> tempAndComplement = new HashSet<string>();
+        Dictionary<string, bool> tempAndDict = new Dictionary<string, bool>();
+
         // MATH 1120,*,MATH 1130,*,MATH 1220,MATH 100,MATH 500,*,MATH 700,MATH 200,MATH 300,MATH 4000,*,MATH 900,*,MATH 600
         //        0  1      2    3   4        5       6        7       8        9       10       11   12     13  14   15
-        bool Check = false;
         try
         {
             string value = "*";
             int[] asteriskArray = PrereqArray.Select((b, i) => b == value ? i : -1).Where(i => i != -1).ToArray();
-
-
 
             for (int i = 0; i < PrereqArray.Length - 1; i = i)
             {
@@ -100,13 +179,13 @@ else
                     {
                         if (x + 1 != lastAsterisk || oneOr)
                         {
-                            AndComplement.Add(PrereqArray[x]);
+                            tempAndComplement.Add(PrereqArray[x]);
                             tempDict.Add(PrereqArray[x], returnTrueIfHasClass(PrereqArray[x]));
                         }
-                        AndComplement.Add(PrereqArray[x + 2]);
+                        tempAndComplement.Add(PrereqArray[x + 2]);
                         tempDict.Add(PrereqArray[x + 2], returnTrueIfHasClass(PrereqArray[x + 2]));
                     }
-                    orDict.Add(tempDict);
+                    tempOrDict.Add(tempDict);
                     i = lastAsterisk + 1;
                 }
                 else
@@ -118,38 +197,52 @@ else
 
             foreach (string s in PrereqArray)
             {
-                if (!AndComplement.Contains(s) && s != "*" && s != "")
+                if (!tempAndComplement.Contains(s) && s != "*" && s != "")
                 {
-                    AndDict.Add(s, returnTrueIfHasClass(s));
+                    bool hasClass = returnTrueIfHasClass(s);
+                    tempAndDict.Add(s, hasClass);
+                    if(hasClass)
+                    {
+                        canTakeClass = true;
+                    }
                 }
             }
 
-            foreach (Dictionary<string, bool> d in orDict)
+            foreach (Dictionary<string, bool> d in tempOrDict)
             {
                 if (!d.ContainsValue(true))
                 {
-                    Check = false;
+                    canTakeClass = false;
                     break;
                 }
                 else
                 {
-                    Check = true;
+                    canTakeClass = true;
                 }
             }
 
-            if (AndDict.ContainsValue(false))
+            if (tempAndDict.ContainsValue(false))
             {
-                Check = false;
+                canTakeClass = false;
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Check = true;
+            canTakeClass = true;
         }
 
+        if(count == 1)
+        {
+            orDict = tempOrDict;
+            AndDict = tempAndDict;
+        }
 
+        if (PrereqArray.Length == 1 && PrereqArray[0] == "")
+        {
+            canTakeClass = true;
+        }
 
-        return Check;
+        return canTakeClass;
     }
 
     // Given a class name as a string

@@ -15,7 +15,10 @@
 }
 else
 {
-    <ClassComponent course="currentCourse" classList="classList"></ClassComponent>
+    foreach (Course c in PrereqList)
+    {
+        <ClassComponent course="c" classList="classList"></ClassComponent>
+    }
     <table class="table">
         <thead>
             <tr>
@@ -40,29 +43,29 @@ else
 <input type="text" @bind="courseName" />
 <br />
 <br />
-<button @onclick="(async ()=> await getCourse())">Get Course</button>
+<button @onclick="(async ()=> await getCourse(courseName))">Get Course</button>
 
 @code {
     public Course currentCourse;
     public string courseName = "";
     public IEnumerable<ReqCourse> ReqCoreList;
     public List<Course> NoPrereqList = new List<Course>();
+    public List<Course> PrereqList = new List<Course>();
     public List<string> classList = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        var Table = "RequiredTest";
-        var _context = new CoursedbContext { CourseList = Table };
+        var csvFile = "RequiredTest";
 
-        var reader = new StreamReader("J:\\Desktop\\Intro to Software Engineering\\Course_Display\\Course_Display\\" + Table + ".csv");
+        var reader = new StreamReader("" + csvFile + ".csv");
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         ReqCoreList = csv.GetRecords<ReqCourse>();
         foreach (ReqCourse req in ReqCoreList)
         {
             Course tempCourse = new Course();
-            courseName = req.CourseName;
-            tempCourse = await getCourse();
-            classList.Add(tempCourse.CourseName);
+            string className = req.CourseName;
+            tempCourse = await getCourse(className);
+            PrereqList.Add(tempCourse);
             if (tempCourse.Prereqs == null || tempCourse.Prereqs == "")
             {
                 NoPrereqList.Add(tempCourse);
@@ -70,13 +73,30 @@ else
         }
         reader.Close();
         csv.Dispose();
+
+        csvFile = "classListTest";
+
+        reader = new StreamReader("" + csvFile + ".csv");
+        csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        ReqCoreList = csv.GetRecords<ReqCourse>();
+        foreach (ReqCourse req in ReqCoreList)
+        {
+            Course tempCourse = new Course();
+            string className = req.CourseName;
+            tempCourse = await getCourse(className);
+            classList.Add(tempCourse.CourseName);
+        }
+        reader.Close();
+        csv.Dispose();
+        courseName = "";
     }
 
     // Given a course name as a string
     // Populates the currentCourse object with the values belonging to that course
-    public async Task<Course> getCourse()
+    public async Task<Course> getCourse(string className)
     {
-        currentCourse = await dbService.GetCourseAsync(courseName);
+        currentCourse = await dbService.GetCourseAsync(className);
+        base.StateHasChanged();
         return currentCourse;
         //dbService.Testing("CSCI300");
     }
