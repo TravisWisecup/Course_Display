@@ -81,8 +81,8 @@ else
     public bool hasTakenClass = false;
     public int count = 0;
 
-    List<Course> orCourses = new List<Course>();
-    List<Course> andCourses = new List<Course>();
+    //List<Course> orCourses = new List<Course>();
+    //List<Course> andCourses = new List<Course>();
 
     List<Dictionary<string, bool>> orDict = new List<Dictionary<string, bool>>();
     Dictionary<string, bool> AndDict = new Dictionary<string, bool>();
@@ -90,14 +90,20 @@ else
     protected override async Task OnInitializedAsync()
     {
         meetsPrereqs = returnPrereqs(course);
-        populateCourses();
+        //populateCourses();
     }
 
+    //Changes the display of the class component by clicking on it
+    //If you click on the component it sets visible to its complement
+    //visible is used to determine whether or not you see the prerequisites
     public async void changeDisplay()
     {
         visible = !visible;
     }
 
+    //Takes a course name, string, as input
+    //Outputs a Task<bool> as a result on whether the user can take the class or not
+    //Takes into consideration the class list that has been passed as a parameter to the class component
     public async Task<bool> checkIfCanTakePrereq(string prereqName)
     {
         Course prereqCourse = await getCourse(prereqName);
@@ -107,20 +113,21 @@ else
         return canTake;
     }
 
-    public async Task populateCourses()
-    {
-        foreach (KeyValuePair<string, bool> kvp in AndDict)
-        {
-            andCourses.Add(getCourse(kvp.Key).Result);
-        }
-        foreach (Dictionary<string, bool> dict in orDict)
-        {
-            foreach (KeyValuePair<string, bool> kvp in dict)
-            {
-                orCourses.Add(getCourse(kvp.Key).Result);
-            }
-        }
-    }
+
+    //public async Task populateCourses()
+    //{
+    //    foreach (KeyValuePair<string, bool> kvp in AndDict)
+    //    {
+    //        andCourses.Add(getCourse(kvp.Key).Result);
+    //    }
+    //    foreach (Dictionary<string, bool> dict in orDict)
+    //    {
+    //        foreach (KeyValuePair<string, bool> kvp in dict)
+    //        {
+    //            orCourses.Add(getCourse(kvp.Key).Result);
+    //        }
+    //    }
+    //}
 
     // Given a course name as a string
     // Populates the currentCourse object with the values belonging to that course
@@ -132,6 +139,11 @@ else
         //dbService.Testing("CSCI300");
     }
 
+    //Given a Course object as input
+    //Returns true if the user can take the course, false otherwise
+    //It separates the prerequisites string of the course to an array splitting it from the commas as long as it isn't null
+    //The function then goes into the prereqcheck which sets the canTake boolean value to true or false
+    //finally it checks if the class list of classes the user has taken includes the course, and sets the hasTakenClass to true if so
     public bool returnPrereqs(Course courseToCheck)
     {
         // "MATH 2230,*,MATH 2030,CSCI 2030,"
