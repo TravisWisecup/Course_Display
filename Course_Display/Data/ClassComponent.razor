@@ -19,8 +19,12 @@ else
 
     </div>
     <div hidden="@visible">
+        @{ 
+            var andCount = 0;
+        }
         @foreach (KeyValuePair<string, bool> kvp in AndDict)
         {
+            andCount++;
             if (returnTrueIfHasClass(kvp.Key))
             {
                 <div style="Background-color:green"><h6>@kvp.Key</h6></div>
@@ -29,7 +33,10 @@ else
             {
                 <div style="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "Background-color:yellow" : "Background-color:red")"><h6>@kvp.Key</h6></div>
             }
-            <div>and</div>
+            if(andCount < AndDict.Count || orDict.Count > 0)
+            {
+                <div>and</div>
+            }
         }
         @{ var dictCount = 0;
             var dictionariesCount = 0;}
@@ -53,7 +60,7 @@ else
                 }
             }
             dictCount = 0;
-            if(dictionariesCount < orDict.Count - 1)
+            if(dictionariesCount < orDict.Count)
             {
                 <div>and</div>
             }
