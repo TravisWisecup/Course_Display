@@ -1,40 +1,62 @@
-﻿@using CsvHelper;
+﻿@using BlazorInputFile;
 @using System.IO;
 @using System.Globalization;
+@using CsvHelper;
 
-
-    <button @onclick="(await => upload())">Upload Local @Table CSV to DB</button>
+<InputFile OnChange="HandleFileSelected" />
 
 @code {
     [Parameter]
     public string Table { get; set; }
 
-    public async void upload()
+    IFileListEntry file;
+    IEnumerable<Course> CourseList;
+
+    public void HandleFileSelected(IFileListEntry[] files)
+    {
+        file = files.FirstOrDefault();
+        if (file != null)
+        {
+            UploadCSV(file);
+        }
+    }
+
+    public async Task UploadCSV(IFileListEntry iFile)
     {
         var _context = new CoursedbContext { CourseList = Table };
 
-        using (var reader = new StreamReader("" + Table + ".csv"))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-        {
-            var records = csv.GetRecords<Course>();
-            var tableString = Table;
-            switch (tableString)
-            {
-                case "CISTList":
-                    _context.CISTList.AddRange(records);
-                    break;
-                case "CYBRList":
-                    _context.CYBRList.AddRange(records);
-                    break;
-                case "CSCIList":
-                    _context.CSCIList.AddRange(records);
-                    break;
-                case "MATHList":
-                    _context.MATHList.AddRange(records);
-                    break;
-            }
+        var ms = new MemoryStream();
+        await file.Data.CopyToAsync(ms);
 
-            await _context.SaveChangesAsync();
+        StreamReader reader = new StreamReader(ms, System.Text.Encoding.UTF8);
+        reader.DiscardBufferedData();
+        reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+        var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        CourseList = csv.GetRecords<Course>();
+
+        var tableString = Table;
+        switch (tableString)
+        {
+            case "CISTList":
+                _context.CISTList.AddRange(CourseList);
+                break;
+            case "CYBRList":
+                _context.CYBRList.AddRange(CourseList);
+                break;
+            case "CSCIList":
+                _context.CSCIList.AddRange(CourseList);
+                break;
+            case "MATHList":
+                _context.MATHList.AddRange(CourseList);
+                break;
         }
+
+        await _context.SaveChangesAsync();
+
+
+        reader.Close();
+        csv.Dispose();
     }
+
 }

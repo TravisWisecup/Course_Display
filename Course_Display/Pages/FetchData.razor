@@ -57,7 +57,7 @@ else
     {
         var csvFile = "RequiredTest";
 
-        var reader = new StreamReader("" + csvFile + ".csv");
+        var reader = new StreamReader(@"Files/" + csvFile + ".csv");
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         ReqCoreList = csv.GetRecords<ReqCourse>();
         foreach (ReqCourse req in ReqCoreList)
@@ -76,7 +76,7 @@ else
 
         csvFile = "classListTest";
 
-        reader = new StreamReader("" + csvFile + ".csv");
+        reader = new StreamReader(@"Files/" + csvFile + ".csv");
         csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         ReqCoreList = csv.GetRecords<ReqCourse>();
         foreach (ReqCourse req in ReqCoreList)

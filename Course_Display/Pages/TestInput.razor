@@ -1,0 +1,46 @@
+﻿@page "/test"
+
+@using BlazorInputFile;
+@using System.IO;
+@using System.Globalization;
+@using CsvHelper;
+
+<InputFile OnChange="HandleFileSelected" />
+
+@if (file != null)
+{
+    <p>Name: @file.Name</p>
+    <p>Size in bytes: @file.Size</p>
+    <p>Last modified date: @file.LastModified.ToShortDateString()</p>
+    <p>Content type (not always supplied by the browser): @file.Type</p>
+}
+
+@code {
+    IFileListEntry file;
+    IEnumerable<ReqCourse> TestList;
+
+    public void HandleFileSelected(IFileListEntry[] files)
+    {
+        file = files.FirstOrDefault();
+        if (file != null)
+        {
+            CSVMethod(file);
+        }
+    }
+
+    public async Task CSVMethod(IFileListEntry iFile)
+    {
+        var ms = new MemoryStream();
+        await file.Data.CopyToAsync(ms);
+
+        StreamReader reader = new StreamReader(ms, System.Text.Encoding.UTF8);
+        reader.DiscardBufferedData();
+        reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+        var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        TestList = csv.GetRecords<ReqCourse>();
+
+        reader.Close();
+        csv.Dispose();
+    }
+}
