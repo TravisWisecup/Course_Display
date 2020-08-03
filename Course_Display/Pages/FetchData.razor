@@ -4,82 +4,142 @@
 @using CsvHelper;
 @using System.IO;
 @using System.Globalization;
+@using BlazorInputFile;
 @inject DBService dbService
 
 <h1>Fetch Data</h1>
 
+<h4>Select Core </h4>
+<InputFile multiple OnChange="HandleFileSelected" />
 
-@if (currentCourse == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    foreach (Course c in PrereqList)
+
+@{
+    if (CoreList.Count == 0)
     {
-        <ClassComponent course="c" classList="classList"></ClassComponent>
+        <p><em>Loading...</em></p>
     }
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Course Name</th>
-                <th>Credit Hours</th>
-                <th>Prereqs</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>@currentCourse.CourseName</td>
-                <td>@currentCourse.CreditHours</td>
-                <!-- <td>@returnPrereqs(currentCourse.Prereqs).ToString()</td> -->
-            </tr>
-        </tbody>
-    </table>
+    else
+    {
+        <h2>Core Requirements</h2>
+        foreach (Course c in CoreList)
+        {
+            <ClassComponent course="c" classList="classList"></ClassComponent>
+        }
+    }
+    <br />
+    <br />
+    if (UpperList.Count == 0)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <h2>Upper Requirements</h2>
+        foreach (Course c in UpperList)
+        {
+            <ClassComponent course="c" classList="classList"></ClassComponent>
+        }
+    }
+    <br />
+    <br />
+    if (AddList.Count == 0)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <h2>Additional Requirements</h2>
+        foreach (Course c in AddList)
+        {
+            <ClassComponent course="c" classList="classList"></ClassComponent>
+        }
+    }
 }
 
-<br />
-<br />
 
-<input type="text" @bind="courseName" />
-<br />
-<br />
-<button @onclick="(async ()=> await getCourse(courseName))">Get Course</button>
+
 
 @code {
     public Course currentCourse;
     public string courseName = "";
-    public IEnumerable<ReqCourse> ReqCoreList;
-    public List<Course> NoPrereqList = new List<Course>();
-    public List<Course> PrereqList = new List<Course>();
+    public IEnumerable<ReqCourse> CSVfile;
+    public List<Course> CoreList = new List<Course>();
+    public List<Course> UpperList = new List<Course>();
+    public List<Course> AddList = new List<Course>();
     public List<string> classList = new List<string>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        var csvFile = "RequiredTest";
+    IFileListEntry file;
+    IEnumerable<Course> CourseList;
 
-        var reader = new StreamReader(@"Files/" + csvFile + ".csv");
+    public void HandleFileSelected(IFileListEntry[] files)
+    {
+        foreach (IFileListEntry file in files)
+        {
+            if (file != null && file.Name == "classList.csv")
+            {
+                UploadCSV(file);
+                break;
+            }
+        }
+        foreach (IFileListEntry file in files)
+        {
+            if (file != null && file.Name != "classList.csv")
+            {
+                UploadCSV(file);
+            }
+        }
+    }
+
+    public async Task HandleCore(StreamReader reader, string fileName)
+    {
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        ReqCoreList = csv.GetRecords<ReqCourse>();
-        foreach (ReqCourse req in ReqCoreList)
+        CSVfile = csv.GetRecords<ReqCourse>();
+        foreach (ReqCourse req in CSVfile)
         {
             Course tempCourse = new Course();
             string className = req.CourseName;
             tempCourse = await getCourse(className);
-            PrereqList.Add(tempCourse);
-            if (tempCourse.Prereqs == null || tempCourse.Prereqs == "")
-            {
-                NoPrereqList.Add(tempCourse);
-            }
+            CoreList.Add(tempCourse);
         }
         reader.Close();
         csv.Dispose();
+    }
 
-        csvFile = "classListTest";
+    public async Task HandleUpper(StreamReader reader, string fileName)
+    {
+        var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        CSVfile = csv.GetRecords<ReqCourse>();
+        foreach (ReqCourse req in CSVfile)
+        {
+            Course tempCourse = new Course();
+            string className = req.CourseName;
+            tempCourse = await getCourse(className);
+            UpperList.Add(tempCourse);
+        }
+        reader.Close();
+        csv.Dispose();
+    }
 
-        reader = new StreamReader(@"Files/" + csvFile + ".csv");
-        csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        ReqCoreList = csv.GetRecords<ReqCourse>();
-        foreach (ReqCourse req in ReqCoreList)
+    public async Task HandleAdd(StreamReader reader, string fileName)
+    {
+        var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        CSVfile = csv.GetRecords<ReqCourse>();
+        foreach (ReqCourse req in CSVfile)
+        {
+            Course tempCourse = new Course();
+            string className = req.CourseName;
+            tempCourse = await getCourse(className);
+            AddList.Add(tempCourse);
+        }
+        reader.Close();
+        csv.Dispose();
+    }
+
+    public async Task HandleClassList(StreamReader reader, string fileName)
+    {
+        var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        CSVfile = csv.GetRecords<ReqCourse>();
+        foreach (ReqCourse req in CSVfile)
         {
             Course tempCourse = new Course();
             string className = req.CourseName;
@@ -88,7 +148,41 @@ else
         }
         reader.Close();
         csv.Dispose();
-        courseName = "";
+    }
+
+    public async Task UploadCSV(IFileListEntry iFile)
+    {
+        var ms = new MemoryStream();
+        try
+        {
+            await iFile.Data.CopyToAsync(ms);
+        }
+        catch (NullReferenceException ne)
+        {
+
+        }
+
+        StreamReader reader = new StreamReader(ms, System.Text.Encoding.UTF8);
+        reader.DiscardBufferedData();
+        reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+        var fileName = iFile.Name.Split(".csv")[0];
+
+        switch (fileName)
+        {
+            case "Core":
+                await HandleCore(reader, fileName);
+                break;
+            case "Upper":
+                await HandleUpper(reader, fileName);
+                break;
+            case "Add":
+                await HandleAdd(reader, fileName);
+                break;
+            case "classList":
+                await HandleClassList(reader, fileName);
+                break;
+        }
     }
 
     // Given a course name as a string

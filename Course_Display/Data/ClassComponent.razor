@@ -16,9 +16,6 @@ else
         <div @onclick="( ()=> changeDisplay())" style="@(meetsPrereqs == true ? "Background-color:yellow" : "Background-color:red")"><h3>@course.CourseName</h3></div>
     }
     <div hidden="@visible">
-
-    </div>
-    <div hidden="@visible">
         @{ 
             var andCount = 0;
         }
@@ -64,6 +61,10 @@ else
             {
                 <div>and</div>
             }
+        }
+        @if(course.Prereqs == "" || course.Prereqs == null)
+        {
+            <div style="Background-color:green">No prerequisites</div>
         }
     </div>
 }
