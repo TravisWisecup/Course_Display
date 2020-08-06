@@ -71,40 +71,70 @@ else
 
 
 @code {
+
+    /// <value>Gets the course for the component.</value>
     [Parameter]
     public Course course { get; set; }
 
+    /// <value>Gets the student list of classes taken for the component.</value>
     [Parameter]
     public List<string> classList { get; set; }
 
+    /// <value>Gets the value of the prerequisites onClick boolean.</value>
     public bool visible = true;
+    /// <value>Gets the value of whether or not the student meets the prerequisites for this course.</value>
     public bool meetsPrereqs = false;
+    /// <value>Gets the value of whether or not the student has taken this course.</value>
     public bool hasTakenClass = false;
+    /// <value>Gets the value of how many times the PrereqCheck method has been called.</value>
     public int count = 0;
 
-    //List<Course> orCourses = new List<Course>();
-    //List<Course> andCourses = new List<Course>();
-
+    /// <value>Gets the list of classes where they can be taken, and whether or not they have been taken.</value>
+    /// <example>
+    /// A class needs  CSCI 2030 with a C- or better, or MATH 2030 with a C- or better, or MATH 2230 with a C- or better,
+    /// So there would be one Dictionary with CSCI 2030, MATH 2030, and MATH 2230
+    /// Their boolean values would be determined by the classList loaded
+    /// </example>
     List<Dictionary<string, bool>> orDict = new List<Dictionary<string, bool>>();
+    /// <value>Gets the dictionary of classes where they can be taken, and whether or not they have been taken.</value>
+    /// <example>
+    /// A class needs  CSCI 3320 and CSCI 3660 with C- or better.
+    /// So there would be one string of "CSCI 3320", and another of "CSCI 3660"
+    /// Their boolean values would be determined by the classList loaded
+    /// </example>
     Dictionary<string, bool> AndDict = new Dictionary<string, bool>();
 
+
+    /// <summary>
+    /// Sets the meetsPrereqs value based on the results of the returnPrereqs function given the current course
+    /// </summary>
+    /// <returns>
+    /// async Task
+    /// </returns>
     protected override async Task OnInitializedAsync()
     {
         meetsPrereqs = returnPrereqs(course);
         //populateCourses();
     }
 
-    //Changes the display of the class component by clicking on it
-    //If you click on the component it sets visible to its complement
-    //visible is used to determine whether or not you see the prerequisites
+    /// <summary>
+    /// Changes the display of the onClick element of the class component, showing or hiding the prerequisites for the class.
+    /// </summary>
+    /// <returns>
+    /// void
+    /// </returns>
     public async void changeDisplay()
     {
         visible = !visible;
     }
 
-    //Takes a course name, string, as input
-    //Outputs a Task<bool> as a result on whether the user can take the class or not
-    //Takes into consideration the class list that has been passed as a parameter to the class component
+    /// <summary>
+    /// Takes <paramref name="prereqName"> and returns true/false depending on if the user can take the class
+    /// </summary>
+    /// <returns>
+    /// The value of true/false if they can or can't take the prerequisite
+    /// </returns>
+    /// <param name="prereqName">A string.</param>
     public async Task<bool> checkIfCanTakePrereq(string prereqName)
     {
         Course prereqCourse = await getCourse(prereqName);
@@ -114,60 +144,76 @@ else
         return canTake;
     }
 
-
-    //public async Task populateCourses()
-    //{
-    //    foreach (KeyValuePair<string, bool> kvp in AndDict)
-    //    {
-    //        andCourses.Add(getCourse(kvp.Key).Result);
-    //    }
-    //    foreach (Dictionary<string, bool> dict in orDict)
-    //    {
-    //        foreach (KeyValuePair<string, bool> kvp in dict)
-    //        {
-    //            orCourses.Add(getCourse(kvp.Key).Result);
-    //        }
-    //    }
-    //}
-
-    // Given a course name as a string
-    // Populates the currentCourse object with the values belonging to that course
+    /// <summary>
+    /// Takes <paramref name="courseName"> and returns a Course object from the appropriate DB table
+    /// </summary>
+    /// <returns>
+    /// Task<Course> object
+    /// </returns>
+    /// <param name="courseName">A string.</param>
     public async Task<Course> getCourse(string courseName)
     {
         Course courseFromDB = new Course();
-        courseFromDB = await dbService.GetCourseAsync(courseName);
-        return courseFromDB;
-        //dbService.Testing("CSCI300");
+        if(courseName.StartsWith("ISQA") || courseName.StartsWith("ITIN") || (courseName.StartsWith("STAT")))
+        {
+            return null;
+        }
+        else
+        {
+            courseFromDB = await dbService.GetCourseAsync(courseName);
+            return courseFromDB;
+        }
     }
 
-    //Given a Course object as input
-    //Returns true if the user can take the course, false otherwise
-    //It separates the prerequisites string of the course to an array splitting it from the commas as long as it isn't null
-    //The function then goes into the prereqcheck which sets the canTake boolean value to true or false
-    //finally it checks if the class list of classes the user has taken includes the course, and sets the hasTakenClass to true if so
+
+    /// <summary>
+    /// Takes <paramref name="courseToCheck"> and returns a boolean value if they can take the class or not
+    /// It separates the prereq string taken from the Course object, and splits it into an array
+    /// It passes that array as a parameter into the PrereqCheck function
+    /// Finally it sets the hasTakenClass boolean value based on whether or not it is contained in the classList
+    /// </summary>
+    /// <returns>
+    /// True/false if they can take the class or not
+    /// </returns>
+    /// <param name="courseToCheck">A Course.</param>
     public bool returnPrereqs(Course courseToCheck)
     {
         // "MATH 2230,*,MATH 2030,CSCI 2030,"
 
-        string[] PrereqArray = { "" };
-
-        if (!(courseToCheck.Prereqs == null))
+        if(courseToCheck == null)
         {
-            PrereqArray = courseToCheck.Prereqs.Split(",");
+            return false;
         }
-
-        bool canTake = PrereqCheck(PrereqArray);
-
-        if (classList.Contains(courseToCheck.CourseName))
+        else
         {
-            hasTakenClass = true;
-        }
+            string[] PrereqArray = { "" };
 
-        return canTake;
+            if (!(courseToCheck.Prereqs == null))
+            {
+                PrereqArray = courseToCheck.Prereqs.Split(",");
+            }
+
+            bool canTake = PrereqCheck(PrereqArray);
+
+            if (classList.Contains(courseToCheck.CourseName))
+            {
+                hasTakenClass = true;
+            }
+
+            return canTake;
+        }
     }
 
-    // Given a string array holding the prerequsities, and using the classList provided by the user
-    // Returns true/false depending on if they can take that class with the classes they've taken so far
+    /// <summary>
+    /// Takes <paramref name="PrereqArray"> and returns a boolean value if they can take the class or not
+    /// Sets up an integer array to hold the element locations of where the asterisks are in <param name="PrereqArray">
+    /// Using the location of where the asterisks are, we can determine if a class belongs to orDict, or if it belongs to andDict
+    /// We hold these values in temporary variables, and set them at the end if count is 1, otherwise we just use them to check if the class can be taken
+    /// /// </summary>
+    /// <returns>
+    /// True/false if they can take the class or not
+    /// </returns>
+    /// <param name="PrereqArray">A string array.</param>
     private bool PrereqCheck(string[] PrereqArray)
     {
         count++;
@@ -265,19 +311,31 @@ else
         return canTakeClass;
     }
 
-    // Given a class name as a string
-    // Returns true if classList contains that class
-    // Returns false if classList does not contain the class
+    /// <summary>
+    /// Takes <paramref name="className"> and returns a boolean value if they can take the class or not
+    /// </summary>
+    /// <returns>
+    /// True/false if they can take the class or not
+    /// </returns>
+    /// <param name="className">A string.</param>
     private bool returnTrueIfHasClass(string className)
     {
         return classList.Contains(className);
     }
 
-    // Given an element location, and the string array of prerequisites from a class
-    // Returns the location of the last asterisk, OR, in a sequence
-    // i.e.: Given 1, returns 3. Given 7 returns 7. Given 12 returns 14.
-    // MATH 1120,*,MATH 1130,*,MATH 1220,MATH 100,MATH 500,*,MATH 700,MATH 200,MATH 300,MATH 4000,*,MATH 900,*,MATH 600
-    //        0  1      2    3   4        5       6        7       8        9       10       11   12     13  14   15
+    /// <summary>
+    /// Takes <paramref name="PrereqArray"> and <paramef name="location"> returns an integer location of the last asterisk, OR, in a sequence
+    /// </summary>
+    /// <returns>
+    /// An integer
+    /// </returns>
+    /// <param name="PrereqArray">A string array.</param>
+    /// <param name="location">An int.</param>
+    /// <example>
+    /// i.e.: Given 1, returns 3. Given 7 returns 7. Given 12 returns 14.
+    /// MATH 1120,*,MATH 1130,*,MATH 1220,MATH 100,MATH 500,*,MATH 700,MATH 200,MATH 300,MATH 4000,*,MATH 900,*,MATH 600
+    ///        0  1      2    3   4        5       6        7       8        9       10       11   12     13  14   15
+    /// </example>
     private int recursiveArrayCheck(string[] PrereqArray, int location)
     {
         if (location + 2 < PrereqArray.Length)

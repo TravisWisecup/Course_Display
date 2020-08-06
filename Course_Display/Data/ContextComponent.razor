@@ -6,21 +6,34 @@
 <InputFile OnChange="HandleFileSelected" />
 
 @code {
+    /// <value>Gets the string of the Table to upload to.</value>
     [Parameter]
     public string Table { get; set; }
 
+    /// <value>Gets the uploaded file.</value>
     IFileListEntry file;
-    IEnumerable<Course> CourseList;
 
-    public void HandleFileSelected(IFileListEntry[] files)
+    /// <value>Gets the list of courses from the csv file.</value>
+    List<Course> CourseList = new List<Course>();
+
+    /// <summary>
+    /// Takes <paramref name="files"> and passes it into the UploadCSV function
+    /// </summary>
+    /// <param name="files">A IFileListEntry.</param>
+    public async Task HandleFileSelected(IFileListEntry[] files)
     {
         file = files.FirstOrDefault();
         if (file != null)
         {
-            UploadCSV(file);
+            await UploadCSV(file);
         }
     }
 
+    /// <summary>
+    /// Takes <paramref name="iFile"> and converts it from a CSV into a List of Course objects, which are then uploaded to the appropriate database table
+    /// through the database context
+    /// </summary>
+    /// <param name="iFile">A string.</param>
     public async Task UploadCSV(IFileListEntry iFile)
     {
         var _context = new CoursedbContext { CourseList = Table };
@@ -32,8 +45,10 @@
         reader.DiscardBufferedData();
         reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
+        var courseCode = Table.Split("List")[0];
+
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        CourseList = csv.GetRecords<Course>();
+        CourseList = csv.GetRecords<Course>().Where(c => c.CourseName.StartsWith(courseCode)).ToList();
 
         var tableString = Table;
         switch (tableString)

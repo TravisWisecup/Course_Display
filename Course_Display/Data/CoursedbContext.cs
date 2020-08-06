@@ -7,6 +7,20 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Course_Display.Data
 {
+    /// <summary>
+    /// The partial <c>CoursedbContext</c> class.
+    /// Contains a DBSet for each table in the database.
+    /// <list type="bullet">
+    /// <item>
+    /// <term>OnConfiguring</term>
+    /// <description>Override method for configuring the database</description>
+    /// </item>
+    /// <item>
+    /// <term>OnModelCreating</term>
+    /// <description>Override method for further configuring the model</description>
+    /// </item>
+    /// </list>
+    /// </summary>
     public partial class CoursedbContext : DbContext
     {
         public CoursedbContext()
@@ -17,15 +31,28 @@ namespace Course_Display.Data
             : base(options)
         {
         }
+        /// <value>Gets the string to determine which table to add to.</value>
 
         public string CourseList { get; set; }
-
+        /// <value>Gets the DBSet for the CISTList table in the database.</value>
         public virtual DbSet<Course> CISTList { get; set; }
+
+        /// <value>Gets the DBSet for the CoreCourses table in the database.</value>
         public virtual DbSet<ReqCourse> CoreCourses { get; set; }
+
+        /// <value>Gets the DBSet for the CoreExtension table in the database.</value>
         public virtual DbSet<ReqCourse> CoreExtension { get; set; }
+
+        /// <value>Gets the DBSet for the CSCIList table in the database.</value>
         public virtual DbSet<Course> CSCIList { get; set; }
+
+        /// <value>Gets the DBSet for the CYBRList table in the database.</value>
         public virtual DbSet<Course> CYBRList { get; set; }
+
+        /// <value>Gets the DBSet for the MATHList table in the database.</value>
         public virtual DbSet<Course> MATHList { get; set; }
+
+        /// <value>Gets the DBSet for the UpperDivision table in the database.</value>
         public virtual DbSet<ReqCourse> UpperDivision { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

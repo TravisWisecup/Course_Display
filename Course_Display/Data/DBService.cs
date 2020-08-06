@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Linq;
@@ -15,40 +16,56 @@ namespace Course_Display.Data
 
 
         public Task<Course> GetCourseAsync(string CourseName)
-
         {
             Course course = new Course();
+            bool skip = false;
 
             string strConn = "Data Source = database-1.cinez0pdciee.us-east-2.rds.amazonaws.com,1433; Initial Catalog = CourseDB; User ID = admin; Password = **OrigamiTigerKing**;";
 
             SqlConnection conn = new SqlConnection(strConn);
 
             string[] CourseNameArray = CourseName.Split(" ");
+            string[] NoSqlTableCourses = { "ISQA", "ITIN", "STAT" };
 
             string DBToCheck = CourseNameArray[0];
 
-            string sql = "SELECT * FROM " + DBToCheck + "List WHERE CourseName='" + CourseName + "';";
-
-            SqlCommand command = new SqlCommand(sql, conn);
-
-            //opening connection and executing the query
-
-            conn.Open();
-
-            SqlDataReader dr = command.ExecuteReader();
-
-            while (dr.Read())
-
+            foreach(string s in NoSqlTableCourses)
             {
-                course.CourseName = dr[0].ToString();
-
-                course.CreditHours = Int32.Parse(dr[1].ToString());
-
-                course.Prereqs = dr[2].ToString();
+                if(DBToCheck == s)
+                {
+                    skip = true;
+                    break;
+                }
             }
 
-            conn.Close();
+            if(skip == false)
+            {
+                string sql = "SELECT * FROM " + DBToCheck + "List WHERE CourseName='" + CourseName + "';";
 
+                SqlCommand command = new SqlCommand(sql, conn);
+
+                //opening connection and executing the query
+
+                conn.Open();
+
+                SqlDataReader dr = command.ExecuteReader();
+
+                while (dr.Read())
+
+                {
+                    course.CourseName = dr[0].ToString();
+
+                    course.CreditHours = Int32.Parse(dr[1].ToString());
+
+                    course.Prereqs = dr[2].ToString();
+                }
+
+                conn.Close();
+            }
+            else
+            {
+                course = null;
+            }
             Task<Course> task = Task.FromResult(course);
 
             //return personModels;

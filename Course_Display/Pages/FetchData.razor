@@ -60,17 +60,21 @@
 
 
 @code {
-    public Course currentCourse;
-    public string courseName = "";
+    /// <value>Gets the IEnumerable of ReqCourses from the CSVfile.</value>
     public IEnumerable<ReqCourse> CSVfile;
+    /// <value>Gets the list of Courses for the required Core classes</value>
     public List<Course> CoreList = new List<Course>();
+    /// <value>Gets the list of Courses for the required Upper Extension classes</value>
     public List<Course> UpperList = new List<Course>();
+    /// <value>Gets the list of Courses for the required Additonal Core Extension classes</value>
     public List<Course> AddList = new List<Course>();
+    /// <value>Gets the list of class names for the user's taken classes</value>
     public List<string> classList = new List<string>();
 
-    IFileListEntry file;
-    IEnumerable<Course> CourseList;
-
+    /// <summary>
+    /// Takes <paramref name="files"> and uploads the given classList.csv file first, and then uploads the other given files
+    /// </summary>
+    /// <param name="files">A IFileListEntry array.</param>
     public void HandleFileSelected(IFileListEntry[] files)
     {
         foreach (IFileListEntry file in files)
@@ -90,6 +94,13 @@
         }
     }
 
+
+    /// <summary>
+    /// Takes <paramref name="reader"> and <paramref name="fileName"> and converts the CSV file into a List<ReqCourse>
+    /// and takes those classes from the database, and loads it into CoreList
+    /// </summary>
+    /// <param name="reader">A StreamReader.</param>
+    /// <param name="fileName">A string.</param>
     public async Task HandleCore(StreamReader reader, string fileName)
     {
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -99,12 +110,21 @@
             Course tempCourse = new Course();
             string className = req.CourseName;
             tempCourse = await getCourse(className);
-            CoreList.Add(tempCourse);
+            if(tempCourse != null)
+            {
+                CoreList.Add(tempCourse);
+            }
         }
         reader.Close();
         csv.Dispose();
     }
 
+    /// <summary>
+    /// Takes <paramref name="reader"> and <paramref name="fileName"> and converts the CSV file into a List<ReqCourse>
+    /// and takes those classes from the database, and loads it into UpperList
+    /// </summary>
+    /// <param name="reader">A StreamReader.</param>
+    /// <param name="fileName">A string.</param>
     public async Task HandleUpper(StreamReader reader, string fileName)
     {
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -114,12 +134,21 @@
             Course tempCourse = new Course();
             string className = req.CourseName;
             tempCourse = await getCourse(className);
-            UpperList.Add(tempCourse);
+            if (tempCourse != null)
+            {
+                UpperList.Add(tempCourse);
+            }
         }
         reader.Close();
         csv.Dispose();
     }
 
+    /// <summary>
+    /// Takes <paramref name="reader"> and <paramref name="fileName"> and converts the CSV file into a List<ReqCourse>
+    /// and takes those classes from the database, and loads it into AddList
+    /// </summary>
+    /// <param name="reader">A StreamReader.</param>
+    /// <param name="fileName">A string.</param>
     public async Task HandleAdd(StreamReader reader, string fileName)
     {
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -129,12 +158,21 @@
             Course tempCourse = new Course();
             string className = req.CourseName;
             tempCourse = await getCourse(className);
-            AddList.Add(tempCourse);
+            if (tempCourse != null)
+            {
+                AddList.Add(tempCourse);
+            }
         }
         reader.Close();
         csv.Dispose();
     }
 
+    /// <summary>
+    /// Takes <paramref name="reader"> and <paramref name="fileName"> and converts the CSV file into a List<ReqCourse>
+    /// and takes those classes from the database, and loads it into classList
+    /// </summary>
+    /// <param name="reader">A StreamReader.</param>
+    /// <param name="fileName">A string.</param>
     public async Task HandleClassList(StreamReader reader, string fileName)
     {
         var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -144,12 +182,20 @@
             Course tempCourse = new Course();
             string className = req.CourseName;
             tempCourse = await getCourse(className);
-            classList.Add(tempCourse.CourseName);
+            if (tempCourse != null)
+            {
+                classList.Add(tempCourse.CourseName);
+            }
         }
         reader.Close();
         csv.Dispose();
     }
 
+    /// <summary>
+    /// Takes <paramref name="f"> and converts the file into a StreamReader
+    /// passes the StreamReader, and based on the file name passes it into the proper upload function
+    /// </summary>
+    /// <param name="iFile">An IFileListEntry.</param>
     public async Task UploadCSV(IFileListEntry iFile)
     {
         var ms = new MemoryStream();
@@ -185,11 +231,16 @@
         }
     }
 
-    // Given a course name as a string
-    // Populates the currentCourse object with the values belonging to that course
+    /// <summary>
+    /// Takes <paramref name="courseName"> and returns a Course object from the appropriate DB table
+    /// </summary>
+    /// <returns>
+    /// Task<Course> object
+    /// </returns>
+    /// <param name="courseName">A string.</param>
     public async Task<Course> getCourse(string className)
     {
-        currentCourse = await dbService.GetCourseAsync(className);
+        Course currentCourse = await dbService.GetCourseAsync(className);
         base.StateHasChanged();
         return currentCourse;
         //dbService.Testing("CSCI300");
