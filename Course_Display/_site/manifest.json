@@ -1,0 +1,246 @@
+{
+  "homepages": [],
+  "source_base_path": "J:/Desktop/Intro to Software Engineering/Course_Display/Course_Display",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Data.Course.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Data.Course.html",
+          "hash": "EYtP5JCE9S7Gq3fLQ0pz5w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Data.CoursedbContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Data.CoursedbContext.html",
+          "hash": "OpzK7U53AmEGOV+dbK0VoQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Data.DBService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Data.DBService.html",
+          "hash": "TrivYgu3SRpYm6zjrzyKPw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Data.ReqCourse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Data.ReqCourse.html",
+          "hash": "q+xcpi8pl8fBeiRSK5tGsg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Data.html",
+          "hash": "bOD92ToSf1YOzFJxtC/knw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Program.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Program.html",
+          "hash": "bqtK3Hq+SO6uXgukpHeAkg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.Startup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.Startup.html",
+          "hash": "fWIIBmyizRfuiBD3u3d5hA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Course_Display.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Course_Display.html",
+          "hash": "GQiXenYXTB7LV1eXZM4kkg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/DynamicModelDemo.CacheKeyFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/DynamicModelDemo.CacheKeyFactory.html",
+          "hash": "2ZzbnE6vNZQl8TXqdiytfQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/DynamicModelDemo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/DynamicModelDemo.html",
+          "hash": "ED2OedcoEE7+fTzONLTpnA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "zXIQ/dv/TBvoTe/EQRYfuA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "rb11VQNIOJ5dmj4nc20KwQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "4q0gBBvKIXH/n9JWpAugkg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "gB8AESyvNru97tzIZofEEg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "qTvxPU255WlCucGySQXH9Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "+rHUkRZHZRi5gd1aTU6lJA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 3,
+          "skipped_file_count": 3
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 10,
+          "skipped_file_count": 10
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
