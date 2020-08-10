@@ -7,6 +7,7 @@
 #Instructions:
 <p>
 If database has not been set up go to step 1., otherwise skip to step 2.:
+  <p>
   1. Go to Add to DB page
     a) Upload appropriate file using the input file buttons as described on the page.
     The page has an input file button for the CSCI, CYBR, CIST, and MATH course lists
@@ -16,7 +17,6 @@ If database has not been set up go to step 1., otherwise skip to step 2.:
     c) Make sure you have the web scraped files for the CSCI Upper Division requirements, and it is named Upper.csv.
     d) Make sure you have your class list with CourseName being the first line of the document, and it is named classList.csv
     e) Upload each of the files using the input button. This can be done separately, or all at once. If done separately, I would recommend that the class list be uploaded first, because the display is dependent on it. It shouldn't display anything until after classList has been uploaded first.
-  <p>
 
 #Release Notes
 <p>Currently our Blazor app can connect to the AWS SQL Server I have setup, locally, and grab information from the database tables I have provided.
