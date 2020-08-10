@@ -8,16 +8,23 @@
 <p>
 If database has not been set up go to step 1., otherwise skip to step 2.:
   <p>
-  1. Go to Add to DB page
-    a) Upload appropriate file using the input file buttons as described on the page.
-    The page has an input file button for the CSCI, CYBR, CIST, and MATH course lists
-  2. Go to the Fetch Data page
-    a) Make sure you have the web scraped files for the CSCI core requirements, and it is named Core.csv. 
-    b) Make sure you have the web scraped files for the CSCI core extension requirements, and it is named Add.csv. 
-    c) Make sure you have the web scraped files for the CSCI Upper Division requirements, and it is named Upper.csv.
-    d) Make sure you have your class list with CourseName being the first line of the document, and it is named classList.csv
-    e) Upload each of the files using the input button. This can be done separately, or all at once. If done separately, I would recommend that the class list be uploaded first, because the display is dependent on it. It shouldn't display anything until after classList has been uploaded first.
-
+<ol>
+  <li> Go to Add to DB page
+    <ol>
+    <li>Upload appropriate file using the input file buttons as described on the page.</li>
+    <li>The page has an input file button for the CSCI, CYBR, CIST, and MATH course lists</li>
+    </ol>
+  </li>
+  <li> Go to the Fetch Data page
+    <ol>
+     <li>Make sure you have the web scraped files for the CSCI core requirements, and it is named Core.csv. </li>
+     <li>Make sure you have the web scraped files for the CSCI core extension requirements, and it is named Add.csv. </li>
+     <li>Make sure you have the web scraped files for the CSCI Upper Division requirements, and it is named Upper.csv.</li>
+     <li>Make sure you have your class list with CourseName being the first line of the document, and it is named classList.csv</li>
+     <li>Upload each of the files using the input button. This can be done separately, or all at once. If done separately, I would recommend that the class list be uploaded first, because the display is dependent on it. It shouldn't display anything until after classList has been uploaded first.</li>
+  </ol>
+  </li>
+</ol>
 #Release Notes
 <p>Currently our Blazor app can connect to the AWS SQL Server I have setup, locally, and grab information from the database tables I have provided.
 The simple functionality I have put in the app is given a course name as a string in a text box, I will return the information for that course in an html table format.</p>
