@@ -14,13 +14,15 @@
 
 
 @{
-    if (CoreList.Count == 0)
+
+    if (CoreList.Count == 0 && classList.Count == 0)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <h2>Core Requirements</h2>
+        int oldCoreListCount = CoreList.Count - 1;
+        <h2 style="@(checkCoreListStatus() ? "Background-color:green" : "Background-color:red")">Core Requirements</h2>
         foreach (Course c in CoreList)
         {
             <ClassComponent course="c" classList="classList"></ClassComponent>
@@ -28,13 +30,13 @@
     }
     <br />
     <br />
-    if (UpperList.Count == 0)
+    if (UpperList.Count == 0 && classList.Count == 0)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <h2>Upper Requirements</h2>
+        <h2 style="@(returnCreditHours(UpperList) >=  12 ? "Background-color:green" : "Background-color:red")">Upper Requirements</h2>
         foreach (Course c in UpperList)
         {
             <ClassComponent course="c" classList="classList"></ClassComponent>
@@ -42,13 +44,13 @@
     }
     <br />
     <br />
-    if (AddList.Count == 0)
+    if (AddList.Count == 0 && classList.Count == 0)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <h2>Additional Requirements</h2>
+        <h2 style="@(returnCreditHours(AddList) >=  9 ? "Background-color:green" : "Background-color:red")">Additional Requirements</h2>
         foreach (Course c in AddList)
         {
             <ClassComponent course="c" classList="classList"></ClassComponent>
@@ -70,6 +72,53 @@
     public List<Course> AddList = new List<Course>();
     /// <value>Gets the list of class names for the user's taken classes</value>
     public List<string> classList = new List<string>();
+
+    public bool CoreListDone = false;
+    public bool UpperListCreditHours = false;
+    public bool AddListCreditHours = false;
+
+
+    /// <summary>
+    /// Loops through the CoreList and determines whether or not all the courses have been taken
+    /// </summary>
+    /// <returns>bool</returns>
+    public bool checkCoreListStatus()
+    {
+        foreach(Course c in CoreList)
+        {
+            if (classList.Contains(c.CourseName))
+            {
+                CoreListDone = true;
+            }
+            else
+            {
+                CoreListDone = false;
+                break;
+            }
+        }
+
+        return CoreListDone;
+    }
+
+    /// <summary>
+    /// Loops through the <paramref name="ListToCheck"/> and adds up the credit hours of each class taken in that list
+    /// returns the total amount of credit hours taken
+    /// </summary>
+    /// <returns> int </returns>
+    /// <param name="ListToCheck">A Course List</param>
+    public int returnCreditHours(List<Course> ListToCheck)
+    {
+        var creditHoursTaken = 0;
+        foreach (Course c in ListToCheck)
+        {
+            if (classList.Contains(c.CourseName))
+            {
+                creditHoursTaken += c.CreditHours;
+            }
+        }
+
+        return creditHoursTaken;
+    }
 
     /// <summary>
     /// Takes <paramref name="files"> and uploads the given classList.csv file first, and then uploads the other given files

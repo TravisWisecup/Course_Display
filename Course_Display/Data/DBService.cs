@@ -14,7 +14,10 @@ namespace Course_Display.Data
             _context = context;
         }
 
-
+        /// <summary>
+        /// Takes <paramref name="CourseName"> and grabs the information from the database and converts it into a Course object
+        /// </summary>
+        /// <param name="CourseName">A string.</param>
         public Task<Course> GetCourseAsync(string CourseName)
         {
             Course course = new Course();
