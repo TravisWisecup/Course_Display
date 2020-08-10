@@ -9,65 +9,86 @@ else
 {
     if (hasTakenClass)
     {
-        <div @onclick="( ()=> changeDisplay())" style="Background-color:green"><h3>@course.CourseName</h3></div>
+        <div>
+            <div class="box green"></div>
+            <div @onclick="( ()=> changeDisplay())"><h3>@course.CourseName</h3></div>
+        </div>
     }
     else
     {
-        <div @onclick="( ()=> changeDisplay())" style="@(meetsPrereqs == true ? "Background-color:yellow" : "Background-color:red")"><h3>@course.CourseName</h3></div>
+    <div>
+        <div class="@(meetsPrereqs == true ? "box yellow" : "box red")"></div>
+        <div @onclick="( ()=> changeDisplay())"><h3>@course.CourseName</h3></div>
+    </div>
     }
-    <div hidden="@visible">
-        @{ 
-            var andCount = 0;
-        }
-        @foreach (KeyValuePair<string, bool> kvp in AndDict)
+<div hidden="@visible">
+    @{
+        var andCount = 0;
+    }
+    @foreach (KeyValuePair<string, bool> kvp in AndDict)
+    {
+        andCount++;
+        if (returnTrueIfHasClass(kvp.Key))
         {
-            andCount++;
+            <div>
+                <div class="box green"></div>
+                <div><h6>@kvp.Key</h6></div>
+            </div>
+        }
+        else
+        {
+            <div>
+                <div class="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "box yellow" : "box red")"></div>
+                <div><h6>@kvp.Key</h6></div>
+            </div>
+        }
+        if (andCount < AndDict.Count || orDict.Count > 0)
+        {
+            <div>and</div>
+        }
+    }
+    @{ var dictCount = 0;
+        var dictionariesCount = 0;}
+    @foreach (Dictionary<string, bool> dict in orDict)
+    {
+        dictionariesCount++;
+        @foreach (KeyValuePair<string, bool> kvp in dict)
+        {
+            dictCount++;
             if (returnTrueIfHasClass(kvp.Key))
             {
-                <div style="Background-color:green"><h6>@kvp.Key</h6></div>
+                <div>
+                    <div class="box green"></div>
+                    <div><h6>@kvp.Key</h6></div>
+                </div>
             }
             else
             {
-                <div style="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "Background-color:yellow" : "Background-color:red")"><h6>@kvp.Key</h6></div>
+                <div>
+                    <div class="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "box yellow" : "box red")"></div>
+                    <div><h6>@kvp.Key</h6></div>
+                </div>
             }
-            if(andCount < AndDict.Count || orDict.Count > 0)
+            if (dictCount < dict.Count)
             {
-                <div>and</div>
+                <div>or</div>
             }
         }
-        @{ var dictCount = 0;
-            var dictionariesCount = 0;}
-        @foreach (Dictionary<string, bool> dict in orDict)
+        dictCount = 0;
+        if (dictionariesCount < orDict.Count)
         {
-            dictionariesCount++;
-            @foreach (KeyValuePair<string, bool> kvp in dict)
-            {
-                dictCount++;
-                if (returnTrueIfHasClass(kvp.Key))
-                {
-                    <div style="Background-color:green"><h6>@kvp.Key</h6></div>
-                }
-                else
-                {
-                    <div style="@(checkIfCanTakePrereq(kvp.Key).Result == true ? "Background-color:yellow" : "Background-color:red")"><h6>@kvp.Key</h6></div>
-                }
-                if(dictCount < dict.Count)
-                {
-                    <div>or</div>
-                }
-            }
-            dictCount = 0;
-            if(dictionariesCount < orDict.Count)
-            {
-                <div>and</div>
-            }
+            <div>and</div>
         }
-        @if(course.Prereqs == "" || course.Prereqs == null)
-        {
-            <div style="Background-color:green">No prerequisites</div>
-        }
-        <br />
-    </div>
+    }
+    @if (course.Prereqs == "" || course.Prereqs == null)
+    {
+        <div>
+            <div class="box green"></div>
+            <div>No prerequisites</div>
+        </div>
+    }
+    <br />
+</div>
 }
 
 

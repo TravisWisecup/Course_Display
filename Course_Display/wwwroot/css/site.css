@@ -117,6 +117,28 @@ app {
     color: red;
 }
 
+.box {
+    float: left;
+    height: 20px;
+    width: 20px;
+    margin-bottom: 15px;
+    border: 1px solid black;
+    clear: both;
+}
+
+.red {
+    background-color: red;
+}
+
+.green {
+    background-color: green;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

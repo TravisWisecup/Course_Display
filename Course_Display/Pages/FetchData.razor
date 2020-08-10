@@ -1,4 +1,5 @@
-﻿@page "/fetchdata"
+﻿
+@page "/fetchdata"
 
 @using Course_Display.Data;
 @using CsvHelper;
@@ -12,9 +13,27 @@
 <h4>Select Core </h4>
 <InputFile multiple OnChange="HandleFileSelected" />
 
+<br />
+<br />
+<div>
+    <label>Can <b>not</b> take this class / Have not met the requirements for the List</label>
+    <div class='box red'></div>
+</div>
+<br>
+<div>
+    <label>Have taken this class / Have met all requirements for this List</label>
+    <div class='box green'></div> 
+</div>
+<br>
+<div>
+    <label>Can take this class</label>
+    <div class='box yellow'></div> 
+</div>
+<br />
+<br />
+<br />
 
 @{
-
     if (CoreList.Count == 0 && classList.Count == 0)
     {
         <p><em>Loading...</em></p>
@@ -84,7 +103,7 @@
     /// <returns>bool</returns>
     public bool checkCoreListStatus()
     {
-        foreach(Course c in CoreList)
+        foreach (Course c in CoreList)
         {
             if (classList.Contains(c.CourseName))
             {
@@ -159,7 +178,7 @@
             Course tempCourse = new Course();
             string className = req.CourseName;
             tempCourse = await getCourse(className);
-            if(tempCourse != null)
+            if (tempCourse != null)
             {
                 CoreList.Add(tempCourse);
             }
