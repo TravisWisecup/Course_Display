@@ -13,6 +13,10 @@ If database has not been set up go to step 1., otherwise skip to step 2.:
     <ol>
     <li>Upload appropriate file using the input file buttons as described on the page.</li>
     <li>The page has an input file button for the CSCI, CYBR, CIST, and MATH course lists</li>
+    <li>Files Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/CSCI.csv</li>
+      <li>Files Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/MATH.csv</li>
+      <li>Files Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/CYBR.csv</li>
+      <li>Files Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/CIST.csv</li>
     </ol>
   </li>
   <li> Go to the Fetch Data page
