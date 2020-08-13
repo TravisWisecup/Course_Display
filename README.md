@@ -2,7 +2,7 @@
 
 <p>We are using Blazor (which utilizes C# and HTML) to host an application via Elastic Beanstalk</p>
 
-<p>#Documentation HTML files from DocFX can be found in the _site/api folder structure<p>
+<p>#Documentation HTML files from DocFX can be found in the _site/api folder structure here: https://github.com/TravisWisecup/Course_Display/tree/master/Course_Display/_site/api<p>
 
 #Instructions:
 <p>
