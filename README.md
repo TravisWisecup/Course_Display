@@ -17,11 +17,14 @@ If database has not been set up go to step 1., otherwise skip to step 2.:
   </li>
   <li> Go to the Fetch Data page
     <ol>
-     <li>Make sure you have the web scraped files for the CSCI core requirements, and it is named Core.csv. </li>
-     <li>Make sure you have the web scraped files for the CSCI core extension requirements, and it is named Add.csv. </li>
-     <li>Make sure you have the web scraped files for the CSCI Upper Division requirements, and it is named Upper.csv.</li>
-     <li>Make sure you have your class list with CourseName being the first line of the document, and it is named classList.csv</li>
-      <li>These files, and a test version of the class list file can be found here: https://github.com/TravisWisecup/Course_Display/tree/master/Course_Display</li>
+     <li>Make sure you have the web scraped files for the CSCI core requirements, and it is named Core.csv. 
+      Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/Core.csv </li>
+     <li>Make sure you have the web scraped files for the CSCI core extension requirements, and it is named Add.csv. 
+      Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/Add.csv</li>
+     <li>Make sure you have the web scraped files for the CSCI Upper Division requirements, and it is named Upper.csv
+      Found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/Upper.csv</li>
+     <li>Make sure you have your class list with CourseName being the first line of the document, and it is named classList.csv
+      Test file found here: https://github.com/TravisWisecup/Course_Display/blob/master/Course_Display/classList.csv</li>
      <li>Upload each of the files using the input button. This can be done separately, or all at once. If done separately, I would recommend that the class list be uploaded first, because the display is dependent on it. It shouldn't display anything until after classList has been uploaded first.</li>
   </ol>
   </li>
